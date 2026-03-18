@@ -93,7 +93,7 @@ Debug and reset endpoints:
 
 ```bash
 # View logs
-docker logs -f mock-olt-631
+docker logs -f cambium-fiber-mock-olt-mock-olt-631-1
 
 # Stop/Start
 cd /opt/cambium-fiber-mock-olt
