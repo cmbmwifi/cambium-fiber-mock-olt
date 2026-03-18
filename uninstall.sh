@@ -18,8 +18,7 @@ if [ -d "$INSTALL_DIR" ]; then
     fi
 else
     echo "==> $INSTALL_DIR not found — stopping containers by project name"
-    PROJECT=$(docker inspect mock-olt-631 \
-        --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || true)
+    PROJECT=$(docker ps --filter "name=cambium-fiber-api-mock-olt" --format '{{.Label "com.docker.compose.project"}}' 2>/dev/null | head -1 || true)
     if [ -n "$PROJECT" ]; then
         docker compose -p "$PROJECT" down --rmi all --volumes
     else

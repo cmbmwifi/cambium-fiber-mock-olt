@@ -52,8 +52,20 @@ if [ -z "$API_NETWORK" ]; then
     echo "WARNING: Could not detect API network — using default 'cambium-fiber-api_default'" >&2
     API_NETWORK="cambium-fiber-api_default"
 fi
-echo "API_NETWORK=${API_NETWORK}" > "$INSTALL_DIR/.env"
+
+# Detect the API version to keep container names in sync
+API_VERSION=$(docker inspect cambium-fiber-api \
+    --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)
+if [ -z "$API_VERSION" ]; then
+    echo "WARNING: Could not detect API version — using 'current'" >&2
+    API_VERSION="current"
+fi
+COMPOSE_PROJECT_NAME="cambium-fiber-api_${API_VERSION//./-}"
+
+printf 'API_NETWORK=%s\nCOMPOSE_PROJECT_NAME=%s\nAPI_VERSION=%s\n' \
+    "$API_NETWORK" "$COMPOSE_PROJECT_NAME" "$API_VERSION" > "$INSTALL_DIR/.env"
 echo "==> Using API network: $API_NETWORK"
+echo "==> Using API version: $API_VERSION"
 
 docker compose up -d --build
 

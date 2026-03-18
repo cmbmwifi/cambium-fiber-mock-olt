@@ -92,8 +92,8 @@ Debug and reset endpoints:
 ## Managing the Mock OLTs
 
 ```bash
-# View logs
-docker logs -f cambium-fiber-api-mock-olt-631
+# View logs (container names include the API version, e.g. v1.0.0-rc4)
+docker logs -f cambium-fiber-api-mock-olt-631-1.0.0-rc4
 # Stop/Start
 cd /opt/cambium-fiber-mock-olt
 docker compose down

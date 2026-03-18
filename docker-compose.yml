@@ -3,7 +3,7 @@ name: cambium-fiber-mock-olt
 services:
   # F6ZF01C8P631 - Mock OLT (plano-core)
   mock-olt-631:
-    container_name: cambium-fiber-api-mock-olt-631
+    container_name: cambium-fiber-api-mock-olt-631-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,7 +26,7 @@ services:
 
   # F6ZF01C8P632 - Mock OLT (plano-core)
   mock-olt-632:
-    container_name: cambium-fiber-api-mock-olt-632
+    container_name: cambium-fiber-api-mock-olt-632-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
@@ -49,7 +49,7 @@ services:
 
   # F6ZF01C8P633 - Mock OLT (dallas-core)
   mock-olt-633:
-    container_name: cambium-fiber-api-mock-olt-633
+    container_name: cambium-fiber-api-mock-olt-633-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
@@ -72,7 +72,7 @@ services:
 
   # F6ZF01C8P634 - Mock OLT (dallas-core)
   mock-olt-634:
-    container_name: cambium-fiber-api-mock-olt-634
+    container_name: cambium-fiber-api-mock-olt-634-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
@@ -95,7 +95,7 @@ services:
 
   # F6ZF01C8P635 - Mock OLT (richardson-core)
   mock-olt-635:
-    container_name: cambium-fiber-api-mock-olt-635
+    container_name: cambium-fiber-api-mock-olt-635-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
@@ -118,7 +118,7 @@ services:
 
   # F6ZF01C8P636 - Mock OLT (richardson-core)
   mock-olt-636:
-    container_name: cambium-fiber-api-mock-olt-636
+    container_name: cambium-fiber-api-mock-olt-636-${API_VERSION:-current}
     build:
       context: .
       dockerfile: Dockerfile
