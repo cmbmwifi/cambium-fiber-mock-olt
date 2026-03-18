@@ -17,8 +17,14 @@ if ! docker compose version &>/dev/null; then
     exit 1
 fi
 if [ ! -f "$API_COMPOSE" ]; then
-    echo "ERROR: Cambium Fiber API not found at /opt/cambium-fiber-api." >&2
+    echo "ERROR: Cambium Fiber API is not installed at /opt/cambium-fiber-api." >&2
     echo "       Install it first: https://github.com/cmbmwifi/cambium-fiber-api" >&2
+    exit 1
+fi
+
+if ! docker inspect cambium-fiber-api &>/dev/null; then
+    echo "ERROR: Cambium Fiber API is installed but not running." >&2
+    echo "       Start it first, then re-run this installer." >&2
     exit 1
 fi
 
