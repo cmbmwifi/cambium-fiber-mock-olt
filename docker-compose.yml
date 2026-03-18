@@ -1,0 +1,139 @@
+name: cambium-fiber-mock-olt
+
+services:
+  # F6ZF01C8P631 - Mock OLT (plano-core)
+  mock-olt-631:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P631.json
+      - OLT_VERSION=1.3
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8800:443"
+      - "8801:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # F6ZF01C8P632 - Mock OLT (plano-core)
+  mock-olt-632:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P632.json
+      - OLT_VERSION=1.2
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8802:443"
+      - "8803:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # F6ZF01C8P633 - Mock OLT (dallas-core)
+  mock-olt-633:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P633.json
+      - OLT_VERSION=1.3
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8804:443"
+      - "8805:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # F6ZF01C8P634 - Mock OLT (dallas-core)
+  mock-olt-634:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P634.json
+      - OLT_VERSION=1.3
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8806:443"
+      - "8807:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # F6ZF01C8P635 - Mock OLT (richardson-core)
+  mock-olt-635:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P635.json
+      - OLT_VERSION=1.3
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8808:443"
+      - "8809:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # F6ZF01C8P636 - Mock OLT (richardson-core)
+  mock-olt-636:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FIXTURE_FILE=F6ZF01C8P636.json
+      - OLT_VERSION=1.3
+      - OLT_USERNAME=${OLT_USERNAME:-admin}
+      - OLT_PASSWORD=${OLT_PASSWORD:-password}
+      - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
+    networks:
+      - api-network
+    ports:
+      - "8810:443"
+      - "8811:22"
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+networks:
+  api-network:
+    name: ${API_NETWORK:-cambium-fiber-api_default}
+    external: true
