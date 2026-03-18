@@ -57,8 +57,9 @@ fi
 API_VERSION=$(docker inspect cambium-fiber-api \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)
 if [ -z "$API_VERSION" ]; then
-    echo "WARNING: Could not detect API version — using 'current'" >&2
-    API_VERSION="current"
+    echo "ERROR: Could not detect API version from cambium-fiber-api image label." >&2
+    echo "       Ensure the Cambium Fiber API container is running and properly tagged." >&2
+    exit 1
 fi
 COMPOSE_PROJECT_NAME="cambium-fiber-api_${API_VERSION//./-}"
 
