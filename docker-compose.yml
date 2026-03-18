@@ -13,11 +13,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8800:443"
-      - "8801:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s
@@ -36,11 +32,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8802:443"
-      - "8803:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s
@@ -59,11 +51,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8804:443"
-      - "8805:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s
@@ -82,11 +70,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8806:443"
-      - "8807:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s
@@ -105,11 +89,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8808:443"
-      - "8809:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s
@@ -128,11 +108,7 @@ services:
       - OLT_USERNAME=${OLT_USERNAME:-admin}
       - OLT_PASSWORD=${OLT_PASSWORD:-password}
       - MOCK_LATENCY_MS=${MOCK_LATENCY_MS:-1100}
-    networks:
-      - api-network
-    ports:
-      - "8810:443"
-      - "8811:22"
+      - API_VERSION=${API_VERSION}
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443/health"]
       interval: 5s

@@ -5,11 +5,13 @@
 if ! getent hosts cambium-fiber-api &>/dev/null; then
     echo "ERROR: Cannot reach 'cambium-fiber-api' on this network." >&2
     echo "" >&2
+    echo "  These mock OLTs were installed against API version ${API_VERSION}." >&2
+    echo "" >&2
     echo "  If the Cambium Fiber API container is stopped, start it and then" >&2
     echo "  restart this container." >&2
     echo "" >&2
-    echo "  If the API is running and this error persists, the mock OLT is not" >&2
-    echo "  connected to the API network. Uninstall and reinstall the mock OLT:" >&2
+    echo "  If the API has been upgraded to a newer version, reinstall the mock OLTs" >&2
+    echo "  to connect them to the new version:" >&2
     echo "    curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/uninstall.sh | bash" >&2
     echo "    curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/install.sh | bash" >&2
     exit 1
