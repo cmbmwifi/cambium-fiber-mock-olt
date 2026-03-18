@@ -93,8 +93,7 @@ Debug and reset endpoints:
 
 ```bash
 # View logs
-docker logs -f cambium-fiber-mock-olt-mock-olt-631-1
-
+docker logs -f cambium-fiber-api-mock-olt-631
 # Stop/Start
 cd /opt/cambium-fiber-mock-olt
 docker compose down
