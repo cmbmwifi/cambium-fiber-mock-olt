@@ -117,5 +117,5 @@ services:
 
 networks:
   api-network:
-    name: ${API_NETWORK:-cambium-fiber-api_default}
+    name: ${API_NETWORK:-cambium-fiber-api_current_default}
     external: true

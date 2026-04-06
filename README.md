@@ -63,9 +63,8 @@ The files in `fixtures/*.json` define each OLT's starting state: device name, ON
 Change a fixture when you want a different starting point for an integration test. Those edits apply only to newly started containers.
 
 ```bash
-cd /opt/cambium-fiber-mock-olt
-docker compose down
-docker compose up -d --build
+docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml down
+docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
 ```
 
 Treat fixtures as the source of truth and containers as disposable state.
@@ -95,17 +94,14 @@ Debug and reset endpoints:
 # View logs (container names include the API version, e.g. v1.0.0-rc4)
 docker logs -f cambium-fiber-api-mock-olt-631-1.0.0-rc4
 # Stop/Start
-cd /opt/cambium-fiber-mock-olt
-docker compose down
-docker compose up -d
+docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml down
+docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d
 
 # Rebuild after fixture changes
-cd /opt/cambium-fiber-mock-olt
-docker compose up -d --build
+docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
 
 # Override simulated latency (default: 1100ms)
-cd /opt/cambium-fiber-mock-olt
-MOCK_LATENCY_MS=500 docker compose up -d --build
+MOCK_LATENCY_MS=500 docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
 
 # Uninstall
 curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/uninstall.sh | bash

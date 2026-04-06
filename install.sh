@@ -51,14 +51,6 @@ fi
 echo "==> Starting mock OLT containers"
 cd "$INSTALL_DIR"
 
-# Detect the network the API container is on and write it to .env
-API_NETWORK=$(docker inspect cambium-fiber-api \
-    --format '{{range $k,$v := .NetworkSettings.Networks}}{{println $k}}{{end}}' 2>/dev/null | head -1)
-if [ -z "$API_NETWORK" ]; then
-    echo "WARNING: Could not detect API network — using default 'cambium-fiber-api_default'" >&2
-    API_NETWORK="cambium-fiber-api_default"
-fi
-
 # Detect the API version to keep container names in sync
 API_VERSION=$(docker inspect cambium-fiber-api \
     --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)
@@ -68,6 +60,9 @@ if [ -z "$API_VERSION" ]; then
     exit 1
 fi
 COMPOSE_PROJECT_NAME="cambium-fiber-api_${API_VERSION//./-}"
+
+# Derive network name from the standard: cambium-fiber-api_{version}_default
+API_NETWORK="${COMPOSE_PROJECT_NAME}_default"
 
 printf 'API_NETWORK=%s\nCOMPOSE_PROJECT_NAME=%s\nAPI_VERSION=%s\n' \
     "$API_NETWORK" "$COMPOSE_PROJECT_NAME" "$API_VERSION" > "$INSTALL_DIR/.env"
