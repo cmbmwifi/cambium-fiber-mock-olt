@@ -24,7 +24,7 @@ COPY lib/ssh_handler.cpython-312-x86_64-linux-gnu.so .
 COPY lib/mock_cli.cpython-312-x86_64-linux-gnu.so .
 COPY lib/camb_conf.cpython-312-x86_64-linux-gnu.so .
 COPY lib/start.sh .
-RUN chmod +x start.sh
+RUN sed -i 's/\r$//' start.sh && chmod +x start.sh
 
 # ssh_handler launcher — wraps compiled module, invoked by debug shell script
 RUN printf '#!/usr/bin/env python3\nfrom ssh_handler import main\nmain()\n' > /app/ssh_handler.py && \

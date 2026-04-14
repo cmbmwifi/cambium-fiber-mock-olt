@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-REPO_URL="https://github.com/cmbmwifi/cambium-fiber-mock-olt.git"
 INSTALL_DIR="${MOCK_OLT_DIR:-/opt/cambium-fiber-mock-olt}"
 API_COMPOSE="/opt/cambium-fiber-api/docker-compose.yml"
+GITHUB_REPO="cmbmwifi/cambium-fiber-mock-olt"
+RAW_BASE="https://raw.githubusercontent.com/${GITHUB_REPO}/main"
+RELEASE_BASE="https://github.com/${GITHUB_REPO}/releases"
 
 echo "==> Cambium Fiber Mock OLT Setup"
 
@@ -28,7 +30,18 @@ if ! docker inspect cambium-fiber-api &>/dev/null; then
     exit 1
 fi
 
-# --- Create install dir (with sudo if /opt isn't writable) ---
+# --- Detect API version ---
+API_VERSION=$(docker inspect cambium-fiber-api \
+    --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)
+if [ -z "$API_VERSION" ]; then
+    echo "ERROR: Could not detect API version from cambium-fiber-api image label." >&2
+    echo "       Ensure the Cambium Fiber API container is running and properly tagged." >&2
+    exit 1
+fi
+
+echo "==> Using API version: $API_VERSION"
+
+# --- Create install dir ---
 if [ ! -d "$INSTALL_DIR" ]; then
     if [ ! -w "$(dirname "$INSTALL_DIR")" ]; then
         sudo mkdir -p "$INSTALL_DIR"
@@ -38,38 +51,34 @@ if [ ! -d "$INSTALL_DIR" ]; then
     fi
 fi
 
-# --- Clone or update repo ---
-if [ -d "$INSTALL_DIR/.git" ]; then
-    echo "==> Updating existing repo at $INSTALL_DIR"
-    git -C "$INSTALL_DIR" pull --ff-only
-else
-    echo "==> Cloning repo to $INSTALL_DIR"
-    git clone "$REPO_URL" "$INSTALL_DIR"
+# --- Download docker-compose.yml ---
+echo "==> Downloading docker-compose.yml"
+curl -fsSL "${RAW_BASE}/docker-compose.yml" -o "$INSTALL_DIR/docker-compose.yml"
+
+# --- Download and load Docker image ---
+RELEASE_TAG="v${API_VERSION}"
+TARBALL_URL="${RELEASE_BASE}/download/${RELEASE_TAG}/cambium-fiber-mock-olt-${RELEASE_TAG}.tar.gz"
+echo "==> Downloading mock OLT image (${RELEASE_TAG})..."
+tmp_tar=$(mktemp)
+if ! curl -fsSL "$TARBALL_URL" -o "$tmp_tar"; then
+    echo "ERROR: Failed to download image tarball from:" >&2
+    echo "       $TARBALL_URL" >&2
+    echo "       Check that release ${RELEASE_TAG} exists." >&2
+    rm -f "$tmp_tar"
+    exit 1
 fi
+echo "==> Loading Docker image..."
+docker load -i "$tmp_tar"
+rm -f "$tmp_tar"
+
+# --- Write .env ---
+printf 'COMPOSE_PROJECT_NAME=cambium-fiber-api\nAPI_VERSION=%s\nMOCK_OLT_IMAGE=cambium-fiber-mock-olt:%s\n' \
+    "$API_VERSION" "$RELEASE_TAG" > "$INSTALL_DIR/.env"
 
 # --- Start mock OLTs ---
 echo "==> Starting mock OLT containers"
 cd "$INSTALL_DIR"
-
-# Detect the API version to keep container names in sync
-API_VERSION=$(docker inspect cambium-fiber-api \
-    --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)
-if [ -z "$API_VERSION" ]; then
-    echo "ERROR: Could not detect API version from cambium-fiber-api image label." >&2
-    echo "       Ensure the Cambium Fiber API container is running and properly tagged." >&2
-    exit 1
-fi
-COMPOSE_PROJECT_NAME="cambium-fiber-api_${API_VERSION//./-}"
-
-# Derive network name from the standard: cambium-fiber-api_{version}_default
-API_NETWORK="${COMPOSE_PROJECT_NAME}_default"
-
-printf 'API_NETWORK=%s\nCOMPOSE_PROJECT_NAME=%s\nAPI_VERSION=%s\n' \
-    "$API_NETWORK" "$COMPOSE_PROJECT_NAME" "$API_VERSION" > "$INSTALL_DIR/.env"
-echo "==> Using API network: $API_NETWORK"
-echo "==> Using API version: $API_VERSION"
-
-docker compose up -d --build
+docker compose up -d
 
 echo ""
 echo "==> Done! Open the Cambium Fiber API setup wizard and add these OLTs:"

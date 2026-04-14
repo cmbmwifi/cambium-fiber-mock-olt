@@ -1,12 +1,8 @@
-name: cambium-fiber-mock-olt
-
 services:
   # F6ZF01C8P631 - Mock OLT (plano-core)
   mock-olt-631:
     container_name: cambium-fiber-api-mock-olt-631-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P631.json
       - OLT_VERSION=1.3
@@ -23,9 +19,7 @@ services:
   # F6ZF01C8P632 - Mock OLT (plano-core)
   mock-olt-632:
     container_name: cambium-fiber-api-mock-olt-632-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P632.json
       - OLT_VERSION=1.2
@@ -42,9 +36,7 @@ services:
   # F6ZF01C8P633 - Mock OLT (dallas-core)
   mock-olt-633:
     container_name: cambium-fiber-api-mock-olt-633-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P633.json
       - OLT_VERSION=1.3
@@ -61,9 +53,7 @@ services:
   # F6ZF01C8P634 - Mock OLT (dallas-core)
   mock-olt-634:
     container_name: cambium-fiber-api-mock-olt-634-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P634.json
       - OLT_VERSION=1.3
@@ -80,9 +70,7 @@ services:
   # F6ZF01C8P635 - Mock OLT (richardson-core)
   mock-olt-635:
     container_name: cambium-fiber-api-mock-olt-635-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P635.json
       - OLT_VERSION=1.3
@@ -99,9 +87,7 @@ services:
   # F6ZF01C8P636 - Mock OLT (richardson-core)
   mock-olt-636:
     container_name: cambium-fiber-api-mock-olt-636-${API_VERSION:-current}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${MOCK_OLT_IMAGE:-cambium-fiber-mock-olt:latest}
     environment:
       - FIXTURE_FILE=F6ZF01C8P636.json
       - OLT_VERSION=1.3
@@ -114,8 +100,3 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-
-networks:
-  api-network:
-    name: ${API_NETWORK:-cambium-fiber-api_current_default}
-    external: true

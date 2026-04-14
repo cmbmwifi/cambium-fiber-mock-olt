@@ -11,7 +11,9 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit 1
 }
 
-$RepoUrl = "https://github.com/cmbmwifi/cambium-fiber-mock-olt.git"
+$GitHubRepo = "cmbmwifi/cambium-fiber-mock-olt"
+$RawBase = "https://raw.githubusercontent.com/$GitHubRepo/main"
+$ReleaseBase = "https://github.com/$GitHubRepo/releases"
 $ApiComposeDir = "$env:ProgramData\Cambium\cambium-fiber-api"
 
 function Write-ColorOutput {
@@ -28,11 +30,6 @@ Write-ColorOutput "Cambium Fiber Mock OLT Setup"
 # --- Prerequisites ---
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
     Write-ColorOutput "Docker is not installed." -Level ERROR
-    exit 1
-}
-if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    Write-ColorOutput "Git is not installed." -Level ERROR
-    Write-ColorOutput "Install Git: https://git-scm.com/download/win" -Level INFO
     exit 1
 }
 
@@ -64,24 +61,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-ColorOutput "Cambium Fiber API detected"
 
-# --- Create install directory ---
-if (-not (Test-Path $InstallDir)) {
-    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
-    Write-ColorOutput "Created $InstallDir"
-}
-
-# --- Clone or update repo ---
-if (Test-Path "$InstallDir\.git") {
-    Write-ColorOutput "Updating existing repo at $InstallDir"
-    git -C $InstallDir pull --ff-only
-    if ($LASTEXITCODE -ne 0) { Write-ColorOutput "Git pull failed" -Level ERROR; exit 1 }
-} else {
-    Write-ColorOutput "Cloning repo to $InstallDir"
-    git clone $RepoUrl $InstallDir
-    if ($LASTEXITCODE -ne 0) { Write-ColorOutput "Git clone failed" -Level ERROR; exit 1 }
-}
-
-# --- Detect API version and network ---
+# --- Detect API version ---
 $ApiVersion = docker inspect cambium-fiber-api --format "{{index .Config.Labels `"org.opencontainers.image.version`"}}" 2>$null
 if (-not $ApiVersion) {
     Write-ColorOutput "Could not detect API version from cambium-fiber-api image label." -Level ERROR
@@ -89,23 +69,53 @@ if (-not $ApiVersion) {
     exit 1
 }
 
-$ProjectName = "cambium-fiber-api_$($ApiVersion -replace '\.', '-')"
-$ApiNetwork = "${ProjectName}_default"
-
 Write-ColorOutput "Using API version: $ApiVersion"
-Write-ColorOutput "Using API network: $ApiNetwork"
+
+# --- Create install directory ---
+if (-not (Test-Path $InstallDir)) {
+    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+    Write-ColorOutput "Created $InstallDir"
+}
+
+# --- Download docker-compose.yml ---
+Write-ColorOutput "Downloading docker-compose.yml"
+Invoke-WebRequest -Uri "$RawBase/docker-compose.yml" -OutFile "$InstallDir\docker-compose.yml"
+
+# --- Download and load Docker image ---
+$ReleaseTag = "v$ApiVersion"
+$TarballUrl = "$ReleaseBase/download/$ReleaseTag/cambium-fiber-mock-olt-$ReleaseTag.tar.gz"
+$TarballPath = Join-Path $env:TEMP "cambium-fiber-mock-olt.tar.gz"
+
+Write-ColorOutput "Downloading mock OLT image ($ReleaseTag)..."
+try {
+    Invoke-WebRequest -Uri $TarballUrl -OutFile $TarballPath
+} catch {
+    Write-ColorOutput "Failed to download image tarball from:" -Level ERROR
+    Write-ColorOutput "  $TarballUrl" -Level ERROR
+    Write-ColorOutput "Check that release $ReleaseTag exists." -Level ERROR
+    exit 1
+}
+
+Write-ColorOutput "Loading Docker image..."
+docker load -i $TarballPath
+if ($LASTEXITCODE -ne 0) {
+    Write-ColorOutput "Failed to load Docker image" -Level ERROR
+    Remove-Item -Force $TarballPath -ErrorAction SilentlyContinue
+    exit 1
+}
+Remove-Item -Force $TarballPath -ErrorAction SilentlyContinue
 
 # --- Write .env file ---
 @"
-API_NETWORK=$ApiNetwork
-COMPOSE_PROJECT_NAME=$ProjectName
+COMPOSE_PROJECT_NAME=cambium-fiber-api
 API_VERSION=$ApiVersion
+MOCK_OLT_IMAGE=cambium-fiber-mock-olt:$ReleaseTag
 "@ | Set-Content -Path "$InstallDir\.env" -Encoding UTF8
 
 # --- Start mock OLTs ---
-Write-ColorOutput "Building and starting mock OLT containers..."
+Write-ColorOutput "Starting mock OLT containers..."
 Push-Location $InstallDir
-docker compose up -d --build
+docker compose up -d
 if ($LASTEXITCODE -ne 0) {
     Write-ColorOutput "Failed to start mock OLT containers" -Level ERROR
     Pop-Location

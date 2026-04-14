@@ -13,7 +13,7 @@ Six containerized mock Cambium Fiber OLTs for hardware-free API development and 
 
 ## Quick Start
 
-**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Cambium Fiber API](https://github.com/cmbmwifi/cambium-fiber-api) installed
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Cambium Fiber API](https://github.com/cmbmwifi/cambium-fiber-api) installed and running
 
 ### Install
 
@@ -27,12 +27,7 @@ curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/mai
 Invoke-WebRequest -Uri https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/install.ps1 -OutFile install.ps1; .\install.ps1
 ```
 
-Or locally if you've already cloned the repo:
-```bash
-./install.sh
-```
-
-This clones the repo to `/opt/cambium-fiber-mock-olt`, connects the API container to the mock OLT network, and starts all six mock OLT containers.
+The installer downloads a pre-built Docker image, joins the API's Docker network, and starts all six mock OLT containers.
 
 ### Add OLTs to Cambium Fiber API
 
@@ -63,16 +58,9 @@ Create a shared credential group:
 
 ## Fixture-Backed State
 
-The files in `fixtures/*.json` define each OLT's starting state: device name, ONUs, management profiles, service profiles, and other configuration data.
+The files in `fixtures/*.json` define each OLT's starting state: device name, ONUs, management profiles, service profiles, and other configuration data. Fixtures are baked into the Docker image at build time.
 
-Change a fixture when you want a different starting point for an integration test. Those edits apply only to newly started containers.
-
-```bash
-docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml down
-docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
-```
-
-Treat fixtures as the source of truth and containers as disposable state.
+Runtime mutations are stored in memory. Restarting a container returns that OLT to its fixture-defined state.
 
 ## Useful Interfaces
 
@@ -102,23 +90,18 @@ docker logs -f cambium-fiber-api-mock-olt-631-1.0.0-rc4
 docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml down
 docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d
 
-# Rebuild after fixture changes
-docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
+# Reset a single OLT to its fixture-defined state
+docker restart cambium-fiber-api-mock-olt-631-1.0.0-rc4
 
 # Override simulated latency (default: 1100ms)
-MOCK_LATENCY_MS=500 docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d --build
+MOCK_LATENCY_MS=500 docker compose -f /opt/cambium-fiber-mock-olt/docker-compose.yml up -d
 
-# Uninstall
+# Uninstall (Linux/macOS)
 curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/uninstall.sh | bash
+
+# Uninstall (Windows PowerShell 7+)
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/uninstall.ps1 -OutFile uninstall.ps1; .\uninstall.ps1
 ```
-
-## Background Reading
-
-New to fiber networking? [docs/concepts.md](docs/concepts.md) explains OLTs, ONUs, ONU profiles, service profiles, and how the fixture JSON maps to real device configuration.
-
----
-
-**Mock OLTs:** 6 containers • **Firmware coverage:** 1.2.x–1.3.x • **License:** Apache 2.0
 
 ## Why This Exists
 
