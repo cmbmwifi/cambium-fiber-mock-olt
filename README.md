@@ -17,9 +17,14 @@ Six containerized mock Cambium Fiber OLTs for hardware-free API development and 
 
 ### Install
 
-From GitHub (recommended):
+**Linux / macOS:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/install.sh | bash
+```
+
+**Windows (PowerShell 7+):**
+```powershell
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/cmbmwifi/cambium-fiber-mock-olt/main/install.ps1 -OutFile install.ps1; .\install.ps1
 ```
 
 Or locally if you've already cloned the repo:
